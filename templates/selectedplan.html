@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>selectedplan</title>
+	<!-- Bootstrap CSS -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+	<!-- script for drop down categories button -->
+
+</head>
+
+<body>
+	<!-- heading2 navbar-->
+	<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+		<div class="container-fluid">
+			<!--a class="navbar-brand" href="#">Navbar</a-->
+			<div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+				<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+					<li class="nav-item">
+						<a href="{{ url_for('home') }}" class="nav-link active" aria-current="page">
+						Home
+						</a>
+					</li>
+					<li class="nav-item"> <a class="nav-link" href="/about">About</a> </li>
+					{% if email != None %}
+					<li class="nav-item"> <a class="nav-link" href="{{ url_for('dashboard')}}">Dashboard</a> </li>
+					<li class="nav-item"> <a class="nav-link" href="{{ url_for('createblog')}}">Create Blog</a> </li>
+					{% endif %}
+
+				</ul>
+			</div>
+		</div>
+	</nav>
+
+
+		<!--user info heading -->
+	<!-- nameing header-->
+	<div class="breadcrumb"> {% if email == None %}
+		<a href="{{ url_for('login')}}" style="position:relative; left:80%; top:2px; color: white;">
+			<button class="btn btn-primary float-end mx-2 mt-2"> Login</button>
+		</a> {% else %}
+		<div class="col-sm-3 mx-3 mt-2"> <b>NAME: </b> {{name}}
+			<br> <b> Email : </b> {{ email }} </div>
+		<div class="row d-flex justify-content-right">
+			<div class="header1">
+				<button style="position:relative; left:700px; top:2px; " class="btn btn-primary float-end mx-2 mt-2">
+					<a href="{{ url_for('logout')}}" class="text-light">
+						Logout
+					</a>
+				</button>
+			</div>
+		</div>
+		{% endif %}
+	</div>
+
+	<br>
+		<h1 style="text-align: center;">  YOUR PLAN </h1>
+
+
+
+
+    <div class="container">
+      <div class="card-deck mb-3 text-center">
+        <div class="card mb-4 box-shadow mx-5">
+          <div class="card-header">
+            <h4 class="my-0 font-weight-normal">{{plan}}</h4>
+          </div>
+          <div class="card-body">
+            <h1 class="card-title pricing-card-title"> {{price}} <small class="text-muted"> /{{post}}</small></h1>
+            <ul class="list-unstyled mt-3 mb-4">
+              <li>create beautiful posts</li>
+              <li>create</li>
+              <li>update </li>
+              <li>Help center access</li>
+            </ul>
+    <div id="paypal-button"></div>
+
+<script src="https://www.paypalobjects.com/api/checkout.js"></script>
+
+<script>
+    var CREATE_PAYMENT_URL  = 'http://127.0.0.1:5000/payment';
+    var EXECUTE_PAYMENT_URL = 'http://127.0.0.1:5000/execute';
+
+    paypal.Button.render({
+
+        env: 'sandbox', // Or 'sandbox'
+
+        commit: true, // Show a 'Pay Now' button
+
+        payment: function() {
+            return paypal.request.post(CREATE_PAYMENT_URL).then(function(data) {
+                return data.paymentID;
+            });
+        },
+
+        onAuthorize: function(data) {
+            return paypal.request.post(EXECUTE_PAYMENT_URL, {
+                paymentID: data.paymentID,
+                payerID:   data.payerID
+            }).then(function(res) {
+                console.log(res.success)
+                // The payment is complete!
+                // You can now show a confirmation message to the customer
+                location.href ="{{ url_for('thank',amount=price) }}";
+            });
+
+
+        }
+
+    }, '#paypal-button');
+</script>
+			  <br>
+						<form action="{{ url_for('home')}}" method="POST">
+							<button class="btn btn-primary" type="submit" >Cancel</button>
+						</form>
+
+          </div>
+        </div>
+        </div>
+      </div>
+
+
+
+
+</body>
+
+</html>

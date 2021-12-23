@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<!-- Required meta tags -->
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- Bootstrap CSS -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+	<!-- script for blog post container -->
+
+	<title>blogpage</title>
+</head>
+
+<body>
+	<!-- heading2 navbar-->
+	<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+		<div class="container-fluid">
+			<!--a class="navbar-brand" href="#">Navbar</a-->
+			<div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+				<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+					<li class="nav-item">
+						<a href="/home" class="nav-link active" aria-current="page">
+						Home
+						</a>
+					</li>
+					<li class="nav-item"> <a class="nav-link" href="/about">About</a> </li>
+					{% if email != None %}
+					<li class="nav-item"> <a class="nav-link" href="/dashboard">Dashboard</a> </li>
+					<li class="nav-item">
+						<a class="nav-link" href="/createblog">
+							Create Blog
+						</a>
+					</li>
+					{% endif %}
+					<li class="nav-item dropdown">
+        				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+						   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        				  Categories
+       					</a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+					{% for catname in category %}
+        			  <a class="dropdown-item" href="/home," >
+						  {{catname.category_name}}
+					  </a>
+					{% endfor %}
+                    </div>
+                   </li>
+				</ul>
+				<form  class="d-flex" action="/" method="POST">
+					<input  class="form-control me-2" type="text" placeholder="Search" aria-label="Search" id ="sv" name="sv">
+					<button class="btn btn-outline-info" type="submit">Search</button>
+				</form>
+			</div>
+		</div>
+	</nav>
+	<!--user info heading -->
+	<!-- nameing header-->
+	<div class="breadcrumb"> {% if email == None %}
+		<a href="/login" style="position:relative; left:80%; top:2px; color: white;">
+			<button class="btn btn-primary float-end mx-2 mt-2"> Login</button>
+		</a> {% else %}
+		<div class="col-sm-3 mx-3 mt-2"> <b>NAME: </b> {{name}}
+			<br> <b> Email : </b> {{ email }} </div>
+		<div class="row d-flex justify-content-right">
+			<div class="header1">
+				<button style="position:relative; left:700px; top:2px; " class="btn btn-primary float-end mx-2 mt-2">
+					<a href="/logout" class="text-light">
+						Logout
+					</a>
+				</button>
+			</div>
+		</div>
+		{% endif %}
+	</div>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+	<!-- posts -->{% for post in posts.items %}
+	<div class="container shadow-lg p-3 mb-5 bg-white rounded">
+			<div class="row justify-content-center">
+				<div class="card text-center">
+					<div class="card-header"> {% for user in username %} {% if post.user_id == user.user_id %} {{ user.name }} {% endif %} {% endfor %} </div>
+					<div class="card-body">
+						<h5 class="card-title text-success">
+          {% for catn in category %}
+          {% if post.category_id == catn.category_id %}
+          {{catn.category_name}}
+          {% endif %}
+          {% endfor %}
+    </h5>
+						<h6 class="card-title">
+          <b>Title : </b> {{post.title}}
+     					 </h6>
+						<p class="card-text"> <b>Description : </b>{{ post.description}}</p>
+						<form action="/singlepost" method="POST">
+							<button class="btn btn-primary" type="submit" name="b" value="{{post.id}}" id="">Read more</button>
+						</form>
+					</div>
+					<div class="card-footer text-muted"> {{post.date_created}} </div>
+				</div>
+			</div>
+		</div>
+	</div>
+	</div>
+	<!-- Optional JavaScript -->
+	<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+	{% endfor %}
+	<!-- Pagination Links-->
+	<div class="mt-3 justify-content-center d-flex"> <a href="/home, page=posts.prev_num }}" class="btn btn-outline-dark
+       {% if posts.page == 1 %}disabled{% endif %}">
+        &laquo;
+    </a>
+		<!-- Loop through the number of pages to display a link for each--> {% if page_num %}
+		<!-- Check for the active page and set the link to "Active"-->{% if posts.page == page_num %} <a href="/home, page=page_num" class="btn btn-dark">
+                {{ page_num }}
+            </a> {% else %} <a href="/home,page=page_num" class="btn btn-outline-dark">
+                {{ page_num }}
+            </a> {% endif %} {% else %} ... {% endif %}  <a href="/home, page=posts.next_num" class="btn btn-outline-dark
+       {% if posts.page == posts.pages %}disabled{% endif %}">
+        &raquo;
+    </a> </div>
+	<p class="mt-3 justify-content-center d-flex"> Showing page {{ posts.page }} of {{ posts.pages }} </p>
+	<br> </body>
+
+</html>
