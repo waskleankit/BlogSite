@@ -4,6 +4,72 @@ from django.db.models import Model
 from datetime import datetime
 from django.utils import timezone
 
+# from django.contrib import admin
+# from django.contrib.auth.models import User
+# from django.db import models
+# from oauth2client.contrib.django_util.models import CredentialsField
+
+
+
+class Posts(models.Model):
+    id = models.IntegerField(primary_key=True)
+    title = models.CharField(max_length=50)
+    description = models.CharField(max_length=500)
+    date_created = models.DateTimeField('date published',default=timezone.now())
+    category_id = models.IntegerField(default=0)
+    user_id = models.IntegerField(default=0)
+
+    def __str__(self):
+        return "{0} , {1} , {2} , {3}, {4}, {5} ".format(self.id,self.title,self.description,self.date_created,self.category_id,self.user_id)
+
+
+class Category(models.Model):
+    category_id = models.IntegerField(primary_key=True)
+    category_name = models.CharField(max_length=50)
+    create_date = models.DateTimeField('date published',default=timezone.now())
+    update_date = models.DateTimeField('date updated',default=timezone.now())
+    def __str__(self):
+        return "{0} , {1} , {2} , {3}".format(self.category_id,self.category_name,self.create_date,self.update_date)
+
+class Users(models.Model):
+    user_id = models.IntegerField(primary_key=True)
+    role = models.CharField(max_length=50,default="user")
+    name = models.CharField(max_length=50)
+    email = models.EmailField()
+    password = models.CharField(max_length=50)
+    def __str__(self):
+        return "{0} , {1} , {2} , {3}, {4}".format(self.user_id,self.role,self.name,self.email,self.password)
+
+
+class Paymenttable(models.Model):
+    payment_id = models.CharField(max_length=50,primary_key=True)
+    user_id = models.IntegerField
+    payer_id = models.CharField(max_length=50)
+    amount = models.IntegerField(default=0)
+    email = models.EmailField()
+    name = models.CharField(max_length=50)
+    json_response = models.CharField(max_length=50)
+    def __str__(self):
+        return "{0} , {1} , {2} , {3}, {4}".format(self.payment_id, self.user_id,self.payer_id,self.amount, self.email, self.name,self.json_responsed)
+
+
+
+
+
+# class CredentialsModel(models.Model):
+#     id = models.ForeignKey(User, primary_key = True, on_delete = models.CASCADE)
+#     credential = CredentialsField()
+#     task = models.CharField(max_length = 80, null = True)
+#     updated_time = models.CharField(max_length = 80, null = True)
+#
+#
+# class CredentialsAdmin(admin.ModelAdmin):
+#     pass
+
+
+
+
+
 # class Customer(models.Model):
 #     id = models.IntegerField(default=0,primary_key=True)
 #     name = models.CharField(max_length=50)
@@ -15,83 +81,6 @@ from django.utils import timezone
 #
 #     def __str__(self):
 #         return "{0} , {1} , AccNo-{2} , Balance-{3}".format(self.name,self.gender,self.account_no,self.balance)
-
-
-
-class Posts(models.Model):
-    id = models.IntegerField(primary_key=True)
-    title = models.CharField(max_length=50)
-    description = models.CharField(max_length=500)
-    date_created = models.DateTimeField('date published',default=timezone.now())
-    category_id = models.IntegerField(default=0)
-    user_id = models.IntegerField(default=0)
-    # def __init__(self,title,description,date_created,category_id,user_id):
-    #     self.title = title
-    #     self.description = description
-    #     self.date_created = date_created
-    #     self.category_id=category_id
-    #     self.user_id=user_id
-
-    def __str__(self):
-        return "{0} , {1} , AccNo-{2} , Balance-{3}".format(self.user_id,self.title,self.description,self.date_created,self.category_id,self.user_id)
-
-
-# class Category(db.Model):
-#     category_id = db.Column(db.Integer,primary_key=True)
-#     category_name = db.Column(db.String(200),unique= False)
-#     create_date = db.Column(db.DateTime,unique= False, default=datetime.utcnow)
-#     update_date = db.Column(db.DateTime,unique= False, default=datetime.utcnow)
-#     def __init__(self,category_name,create_date,update_date):
-#         self.category_name = category_name
-#         self.create_date = create_date
-#         self.update_date = update_date
-#     def __repr__(self):
-#         return '<User %r>' % self.category_id
-#
-#
-# class Users(db.Model):
-#     user_id = db.Column(db.Integer,primary_key=True)
-#     role = db.Column(db.String(200),unique= False)
-#     name = db.Column(db.String(200),unique= False , nullable=False)
-#     email = db.Column(db.String(200),unique= False)
-#     password = db.Column(db.String(200),unique= False)
-#
-#     def __init__(self,name,email):
-#         self.name = name
-#         self.email = email
-#
-#     def __repr__(self):
-#         return '%r' % self.user_id
-#
-#
-#
-#
-# class Paymenttable(db.Model):
-#     payment_id = db.Column(db.String,primary_key=True)
-#     user_id = db.Column(db.Integer,unique= False)
-#     payer_id = db.Column(db.String,unique= False)
-#     amount = db.Column(db.Integer,unique= False)
-#     email = db.Column(db.String, unique=False)
-#     name = db.Column(db.String, unique=False)
-#     json_response = db.Column(db.String(200), unique=False)
-#     def __init__(self,payment_id, payer_id, email, name,user_id,json_response):
-#         self.name = name
-#         self.email = email
-#         self.payment_id = payment_id
-#         self.payer_id = payer_id
-#         self.user_id = user_id
-#         # self.amount = amount
-#         self.json_response = json_response
-#
-#
-#     def __repr__(self):
-#         return '%r' % self.payment_id
-
-
-
-
-
-
 
 
 

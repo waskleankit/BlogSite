@@ -55,6 +55,7 @@
 			<div class="row justify-content-center">
 				<div class="card text-center">
 		<form method="POST" action="/post_user">
+			{% csrf_token %}
 					<div class="card-header">
 
 							<label name="login_button" style="position:relative; left:center; top:2px;"><b>Select Category</b></label>

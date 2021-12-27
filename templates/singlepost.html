@@ -18,10 +18,10 @@
 			<!--a class="navbar-brand" href="#">Navbar</a-->
 			<div class="collapse navbar-collapse" id="navbarTogglerDemo03">
 				<ul class="navbar-nav me-auto mb-2 mb-lg-0">
-					<li class="nav-item"> <a href="{{ url_for('home') }}" class="nav-link" aria-current="page">Home</a> </li>
+					<li class="nav-item"> <a href="/home" class="nav-link" aria-current="page">Home</a> </li>
 					<li class="nav-item"> <a class="nav-link" href="/about">About</a> </li> {% if email != None %}
-					<li class="nav-item"> <a class="nav-link" href="{{ url_for('dashboard')}}">Dashboard</a> </li>
-					<li class="nav-item"> <a class="nav-link active" href="{{ url_for('createblog')}}">Createblog</a> </li> {% endif %} </ul>
+					<li class="nav-item"> <a class="nav-link" href="/dashboard">Dashboard</a> </li>
+					<li class="nav-item"> <a class="nav-link active" href="/createblog">Createblog</a> </li> {% endif %} </ul>
 				<form class="d-flex">
 					<input class="form-control me-2" type="search" placeholder="Search" name="search" aria-label="Search">
 					<button class="btn btn-outline-success" type="submit">Search</button>
@@ -32,7 +32,7 @@
 	<!--user info heading -->
 	<!-- nameing header-->
 	<div class="header1 breadcrumb"> {% if email == None %}
-		<a href="{{ url_for('login')}}" style="position:relative; left:80%; top:2px; color: white;">
+		<a href="/login" style="position:relative; left:80%; top:2px; color: white;">
 			<button class="btn btn-primary mx-2"> Login</button>
 		</a> {% else %}
 		<div class="col-sm-3 mx-3 mt-2"> <b>NAME: </b> {{name}}
@@ -40,7 +40,7 @@
 		<div class="row d-flex justify-content-right">
 			<div class="header1">
 				<button style="position:relative; left:700px; top:2px; " class="btn btn-primary float-end mx-2 mt-2">
-					<a href="{{ url_for('logout')}}" class="text-light">
+					<a href="/logout" class="text-light">
 						Logout
 					</a>
 				</button>
@@ -62,9 +62,9 @@
           {% endfor %}
     </h5>
 						<h6 class="card-title">
-          <b>Title : </b>{{posts.title|capitalize}}
+          <b>Title : </b>{{posts.title}}
       </h6>
-						<p class="card-text"> <b>Description : </b>{{ posts.description|capitalize }}</p>
+						<p class="card-text"> <b>Description : </b>{{ posts.description }}</p>
 					</div>
 					<div class="card-footer text-muted"> {{posts.date_created}} </div>
 				</div>

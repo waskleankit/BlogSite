@@ -20,18 +20,18 @@
 			<!--a class="navbar-brand" href="#">Navbar</a-->
 			<div class="collapse navbar-collapse" id="navbarTogglerDemo03">
 				<ul class="navbar-nav me-auto mb-2 mb-lg-0">
-					<li class="nav-item"> <a href="http://127.0.0.1:5000/" class="nav-link active" aria-current="page">Home</a> </li>
+					<li class="nav-item"> <a href="/home" class="nav-link active" aria-current="page">Home</a> </li>
 					<li class="nav-item"> <a class="nav-link" href="/about">about</a> </li> {% if email != None %}
-					<li class="nav-item"> <a class="nav-link" href="{{ url_for('dashboard')}}">Dashboard</a> </li>
-					<li class="nav-item"> <a class="nav-link" href="{{ url_for('createblog')}}">Createblog</a> </li>
-					<li class="nav-item"> <a class="nav-link" href="{{ url_for('edit')}}">Editblog</a> </li> {% endif %} </ul>
+					<li class="nav-item"> <a class="nav-link" href="/dashboard">Dashboard</a> </li>
+					<li class="nav-item"> <a class="nav-link" href="/createblog">Createblog</a> </li>
+					<li class="nav-item"> <a class="nav-link" href="/edit">Editblog</a> </li> {% endif %} </ul>
 			</div>
 		</div>
 	</nav>
 	<!--   email heading  -->
 	<!-- nameing header-->
 	<div class="breadcrumb"> {% if email == None %}
-		<a href="{{ url_for('login')}}" style="position:relative; left:80%; top:2px; color: white;">
+		<a href="/login" style="position:relative; left:80%; top:2px; color: white;">
 			<button class="btn btn-primary float-end mx-2 mt-2"> Login</button>
 		</a> {% else %}
 		<div class="col-sm-3 mx-3 mt-2"> <b>NAME: </b> {{name}}
@@ -39,7 +39,7 @@
 		<div class="row d-flex justify-content-right">
 			<div class="header1">
 				<button style="position:relative; left:700px; top:2px; " class="btn btn-primary float-end mx-2 mt-2">
-					<a href="{{ url_for('logout')}}" class="text-light">
+					<a href="/logout" class="text-light">
 						Logout
 					</a>
 				</button>
@@ -57,26 +57,28 @@
 					<div class="card-header"> <b>Edit Blog</b> </div>
 					<div class="card-body">
 						<form method="POST" action="/update">
+							{% csrf_token %}
 							<label for="login_button" name="login_button" style="position:relative; left:center; "><b>Change Category</b></label>
-							<div class="dropdown"> {% for catn in category %} {% if post.category_id == catn.category_id %}
+							<div class="dropdown"> {% for catn in category %} {% if posts.category_id == catn.category_id %}
 								<!--                  <label style = "position:relative; left:center; top:2px;">{{ catn.category_name }}</label>-->
 								<select style="position:relative; left:center; top:2px;" name="category" value="{{ catn.category_name }}"> {% for catname in category %}
-									<option value="{{catname.category_id}}">{{catname.category_name}}</option> {% endfor %} <span style="position:relative;  top:2px; background-color:Green;">{{ catn.category_name }}</span> {% endif %} </select> {% endfor %} </div>
-							<label for="fname" id="titl" name="title" style="position:relative; left:center; top:2px;"><b> Change Title :</b></label>
+									<option name="category_id" value="{{catname.category_id}}">{{catname.category_name}}</option> {% endfor %} <span style="position:relative;  top:2px; background-color:Green;">{{ catn.category_name }}</span> {% endif %} </select> {% endfor %} </div>
+							<label for="fname" id="title" name="title" style="position:relative; left:center; top:2px;"><b> Change Title :</b></label>
 							<br>
-							<input type="text" id="name" type="submit" name="name" value="{{post.title}}"></input>
+							<input type="text" id="name" type="submit" name="name" value="{{posts.title}}"></input>
 							<br>
 							<label for="lname"><b>Edit Description: </b></label>
 							<br>
-							<textarea  rows="6" id="description" type="submit" name="desc" style="width:800px;">{{ post.description }}</textarea>
+							<textarea  rows="6" id="description" type="submit" name="desc" style="width:800px;">{{ posts.description }}</textarea>
 							<br>
 <!--							<input accept="jpeg/png" name="subject" class="btn btn-primary" type="submit" value="reupload image">-->
-							<button name="b" value="{{post.id}}" class="btn btn-primary" type="submit">Save Changes</button>
+							<button name="b" value="{{posts.id}}" class="btn btn-primary" type="submit">Save Changes</button>
 						</form>
 					</div>
 					<div class="card-header">
 						<form action="/deletepost" method="POST">
-							<button name="a" class="btn btn-danger" value="{{post.id}}">Delete</button>
+							{% csrf_token %}
+							<button name="a" class="btn btn-danger" value="{{posts.id}}">Delete</button>
 						</form>
 					</div>
 				</div>

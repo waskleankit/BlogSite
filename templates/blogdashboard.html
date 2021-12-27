@@ -39,14 +39,15 @@
        					</a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
 					{% for catname in category %}
-        			  <a class="dropdown-item" href="/dashboard'," >
+        			  <a class="dropdown-item"  value="{{catname.category_id}}" href="/dashboard" >
 						  {{catname.category_name}}
 					  </a>
 					{% endfor %}
                     </div>
                    </li>
      			</ul>
-				<form  class="d-flex" action="/dashboard" method="POST">
+				<form  class="d-flex" action="/dashboard/" method="POST">
+					{% csrf_token %}
 					<input  class="form-control me-2" type="text" placeholder="Search" aria-label="Search" id ="sv" name="sv">
 					<button class="btn btn-outline-info" type="submit">Search</button>
 				</form>
@@ -85,12 +86,14 @@
 						<td>{{post.description}}</td>
 						<td>{{post.date_created}} </td>
 						<td>
-							<form action="/edit" method="POST">
+							<form action="/edit/{{post.id}}/" method="POST">
+								{% csrf_token %}
 								<button class="btn btn-info btn-md shadow-sm p-2 mb-3 rounded" name="b" value="{{post.id}}">Edit</button>
 							</form>
 						</td>
 						<td>
 							<form action="/deletepost" method="POST">
+								{% csrf_token %}
 								<button class="btn btn-danger btn-md shadow-sm p-2 mb-3 rounded " name="a" value="{{post.id}}">Delete</button>
 							</form>
 						</td>

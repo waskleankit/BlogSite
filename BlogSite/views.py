@@ -2,56 +2,27 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from BlogAdmin.models import *
 from django.views.decorators.csrf import csrf_exempt
-
-# from googlelogin import *
-#
-#
-#
-# # gmail login
-# @app.route('/login')
-# def login():
-#     google = oauth.create_client('google')
-#     redirect_uri = url_for('authorize', _external=True)
-#     return google.authorize_redirect(redirect_uri)
-# @app.route('/authorize')
-# def authorize():
-#     google = oauth.create_client('google')
-#     token = google.authorize_access_token()
-#     resp = google.get('userinfo')
-# #   resp.raise_for_status()
-#     user_info = resp.json()
-#     # do something with the token and profile
-#     session['email'] = user_info['email']
-#     session['name'] = user_info['name']
-#     return redirect('/')
-# @app.route('/logout')
-# def logout():
-#     for key in list (session.keys()):
-#         session.pop(key)
-#     return redirect('/')
-
-
-
-
-
+from django.shortcuts import redirect
+from django.db.models import Q
 
 
 name = "name"
 email = "email"
+
+
+
+
 def home(request):
     # ROWS_PER_PAGE = 5
     # page = request.args.get('page', 1, type=int)
     # email = dict(session).get('email',None)
     # name = dict(session).get('name',None)
-    # tag = request.form.get('sv')
-    # searchcat = request.args.get("s_cat")
-    # if searchcat != None:
-    #     posts = Posts.query.filter_by(category_id = searchcat).paginate(page=page, per_page=ROWS_PER_PAGE)
-
-    # elif tag != None:
-    #     search = "%{}%".format(tag)
-    #     posts = Posts.query.filter(or_(Posts.description.like(search),Posts.title.like(search))).paginate(page=page, per_page=ROWS_PER_PAGE)
-    # else:
+    if request.method == "POST":
+        tag = request.POST['sv']
+        posts = Posts.objects.filter(Q(description__contains=tag) | Q(title__contains=tag))
+            # .paginate(page=page, per_page=ROWS_PER_PAGE)
+    else:
+        posts = Posts.objects.order_by('-date_created')
     #     posts = Posts.query.paginate(page=page, per_page=ROWS_PER_PAGE)
     # cate = Category.query.all()
     # username = Users.query.all()
@@ -62,15 +33,25 @@ def home(request):
     #     db.session.add(userinserting)
     #     db.session.commit()
     # return render_template('/index.html',email=email,posts=posts,category=cate,username=username,name=name)
-    # posts = Posts.objects.first()
+
+    cate = Category.objects.all()
+    username = Users.objects.all()
     # print(posts)
     # print(posts.user_id)
-    # context = {'name': name, 'email': email,'posts':posts}
-    context = {'name': name, 'email': email}
+    context = {'name': name, 'email': email,'posts':posts,'category' : cate,'username':username}
+    # context = {'name': name, 'email': email}
     return render(request,"index.html",context)
 
+def home2(request,category_id):
+    searchcat = category_id
+    posts = Posts.objects.filter(category_id=searchcat)
+    cate = Category.objects.all()
+    username = Users.objects.all()
+    context = {'name': name, 'email': email,'posts':posts,'category' : cate,'username':username}
+    return render(request,"index.html",context)
 
-# def singlepost():
+from django.shortcuts import get_object_or_404
+def post_detail(request,post_id):
 #     idvalue = request.values.get("b")
 #     print(idvalue)
 #     posts = Posts.query.filter_by(id = idvalue).first()
@@ -79,7 +60,18 @@ def home(request):
 #     email = dict(session).get('email', None)
 #     name = dict(session).get('name', None)
 #     return render_template('singlepost.html',email=email,posts=posts,category=cate,username=username,name=name)
+    posts = get_object_or_404(Posts, pk=post_id)
+    cate = Category.objects.all()
+    username = Users.objects.all()
 
+    context = {'name': name, 'email': email,'posts':posts,'category' : cate,'username':username}
+    return render(request,"singlepost.html",context)
+
+# from django.shortcuts import get_object_or_404
+# def customer_detail(request,customer_id):
+#     customer = get_object_or_404(Customer, pk=customer_id)
+#     context = {'customer': customer,}
+#     return render(request, 'CustomerApp/customer_details.html',context)
 
 
 def about(request):
@@ -106,7 +98,18 @@ def dashboard(request):
     # else:
     #     posts = Posts.query.filter_by(user_id = userid).all()
     # return render_template('blogdashboard.html',email=email1,posts=posts,category=cate,name=name)
-    context = {'name': name, 'email': email}
+    if request.method == "POST":
+        if request.POST['sv'] != None:
+           tag = request.POST['sv']
+           posts = Posts.objects.filter(Q(description__contains=tag) | Q(title__contains=tag))
+         # .paginate(page=page, per_page=ROWS_PER_PAGE)
+        else:
+            posts = Posts.objects.filter(category_id=searchcat)
+    else:
+         posts = Posts.objects.order_by('-date_created')
+    cate = Category.objects.all()
+    username = Users.objects.all()
+    context = {'name': name, 'email': email ,'posts':posts, 'category': cate, 'username': username}
     return render(request, "blogdashboard.html", context)
 
 def createblog(request):
@@ -121,45 +124,59 @@ def createblog(request):
     # else:
     #     cate = Category.query.all()
     #     return render_template('createblog.html',email=email,category=cate,name=name)
-    context = {'name': name, 'email': email}
+    cate = Category.objects.all()
+    context = {'name': name, 'email': email ,'category': cate}
     return render(request, "createblog.html", context)
 
-
 # this post_user is for creating new  post
-# @app.route('/post_user',methods=['POST'])
-# def post_user():
-#     title = request.form['name']
-#     description = request.form['desc']
-#     date_created = datetime.utcnow()
-#     category_id = request.form['category']
+from django.utils import timezone
+def post_user(request):
+    # name = request.POST['name']
+    title = request.POST['name']
+    description = request.POST['desc']
+    date_created = timezone.now()
+    category_id = request.POST['category']
 #     email1 = dict(session).get('email', None)
 #     user = Users.query.filter_by(email = email1).first()
 #     user_id = user.user_id
-#     post=Posts(title,description,date_created,category_id,user_id)
-#     db.session.add(post)
-#     db.session.commit()
-#     cate = Category.query.all()
-#     user = Users.query.filter_by(email = email1).first()
+    user_id = 2
+    latest_post = Posts.objects.latest('id')
+    id=latest_post.id + 1
+    post=Posts(id,title,description,date_created,category_id,user_id)
+    post.save();
+    # user = Users.query.filter_by(email = email1).first()
 #     userid = user.user_id
 #     posts = Posts.query.filter_by(user_id = userid).all()
 #     name = dict(session).get('name', None)
-#     return render_template('blogdashboard.html',email=email1,posts=posts,category=cate,name=name)
-#
+    posts = Posts.objects.all()
+    cate = Category.objects.all()
+    username = Users.objects.all()
+    context = {'name': name, 'email': email ,'posts':posts, 'category': cate, 'username': username}
+    return render(request, "blogdashboard.html", context)
+
+
 # @app.route("/edit",methods = ["GET","POST"])
-# def edit():
+def edit(request,post_id):
 #     idvalue = request.values.get("b")
 #     posts = Posts.query.filter_by(id = idvalue).first()
 #     cate = Category.query.all()
 #     email = dict(session).get('email', None)
 #     name = dict(session).get('name', None)
 #     return render_template('editblog.html',email=email, post=posts,category=cate,name=name)
+    posts = get_object_or_404(Posts, pk=post_id)
+    cate = Category.objects.all()
+    username = Users.objects.all()
+    context = {'name': name, 'email': email,'posts':posts,'category' : cate,'username':username}
+    return render(request,'editblog.html',context)
 #
 # @app.route('/update',methods=['POST'])
-# def update():
-#     title = request.form['name']
-#     description = request.form['desc']
-#     category = request.form['category']
-#     date_created = datetime.utcnow().strftime('%B %d %Y ')
+def update(request):
+    id = request.POST.get('b')
+    title = request.POST['name']
+    description = request.POST['desc']
+    category_id = request.POST.get('category')
+    date_created = timezone.now()
+
 #     id = request.form['b']
 #     posts = db.session.query(Posts).filter_by(id = request.form['b']).update({"title": title,"description":description,"date_created":date_created,"category_id":category})
 #     db.session.commit()
@@ -167,17 +184,19 @@ def createblog(request):
 #     name = dict(session).get('name', None)
 #     user = Users.query.filter_by(email=email1).first()
 #     userid = user.user_id
+    user_id = 2
 #     posts = Posts.query.filter_by(user_id=userid).all()
 #     cate = Category.query.all()
 #     return render_template("blogdashboard.html",email=email1,posts=posts,category=cate,name=name)
+    post=Posts(id,title,description,date_created,category_id,user_id)
+    post.save();
+    return redirect('/dashboard')
 #
 # @app.route('/deletepost',methods=['POST','GET'])
-# def deletepost():
-#     idvalue = request.form.get("a")
-#     posts= db.session.query(Posts).filter_by(id=idvalue).first()
-#     db.session.delete(posts)
-#     db.session.commit()
-#     return redirect('/dashboard')
+def deletepost(request):
+    idvalue = request.POST["a"]
+    posts = Posts.objects.filter(id=idvalue).delete()
+    return redirect('/dashboard')
 #
 # @app.route("/selectedplan",methods = ["GET","POST"])
 # def selectedplan():
