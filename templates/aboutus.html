@@ -36,7 +36,7 @@
 		<div class="col-sm-3 mx-3 mt-2"> <b>NAME: </b> {{name}}
 			<br> <b> Email : </b> {{ email }} </div>
 		<div class="header1">
-			<button style="position:relative; left:700px; top:2px; " class="btn btn-primary float-end mx-2 mt-2"><a href="/logout" class="text-light">Logout</a></button>
+			<button style="position:relative; left:700px; top:2px; " class="btn btn-primary float-end mx-2 mt-2"><a href="{% url 'logout' %}" class="text-light" style="text-decoration:none">Logout</a></button>
 		</div>
 	</div> {% endif %} </section>
 	<div class="page-bottom">

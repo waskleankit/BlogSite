@@ -20,15 +20,15 @@
 			<div class="collapse navbar-collapse" id="navbarTogglerDemo03">
 				<ul class="navbar-nav me-auto mb-2 mb-lg-0">
 					<li class="nav-item">
-						<a href="{{ url_for('home') }}" class="nav-link active" aria-current="page">
+						<a href="/home" class="nav-link active" aria-current="page">
 						Home
 						</a>
 					</li>
 					<li class="nav-item"> <a class="nav-link" href="/about">About</a> </li>
 					{% if email != None %}
-					<li class="nav-item"> <a class="nav-link" href="{{ url_for('dashboard')}}">Dashboard</a> </li>
+					<li class="nav-item"> <a class="nav-link" href="/dashboard">Dashboard</a> </li>
 					<li class="nav-item">
-						<a class="nav-link" href="{{ url_for('createblog')}}">
+						<a class="nav-link" href="/createblog">
 							Create Blog
 						</a>
 					</li>
@@ -40,7 +40,7 @@
        					</a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
 					{% for catname in category %}
-        			  <a class="dropdown-item" href="{{ url_for('home',s_cat=catname.category_id) }}" >
+        			  <a class="dropdown-item" href="/home" >
 						  {{catname.category_name}}
 					  </a>
 					{% endfor %}
@@ -57,7 +57,7 @@
 	<!--user info heading -->
 	<!-- nameing header-->
 	<div class="breadcrumb"> {% if email == None %}
-		<a href="{{ url_for('login')}}" style="position:relative; left:80%; top:2px; color: white;">
+		<a href="/login" style="position:relative; left:80%; top:2px; color: white;">
 			<button class="btn btn-primary float-end mx-2 mt-2"> Login</button>
 		</a> {% else %}
 		<div class="col-sm-3 mx-3 mt-2"> <b>NAME: </b> {{name}}
@@ -65,7 +65,7 @@
 		<div class="row d-flex justify-content-right">
 			<div class="header1">
 				<button style="position:relative; left:700px; top:2px; " class="btn btn-primary float-end mx-2 mt-2">
-					<a href="{{ url_for('logout')}}" class="text-light">
+					<a href="{% url 'logout' %}" class="text-light" style="text-decoration:none">
 						Logout
 					</a>
 				</button>

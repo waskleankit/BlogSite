@@ -40,7 +40,7 @@
        					</a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
 					{% for catname in category %}
-        			  <a class="dropdown-item" href="/home2/{{catname.category_id}}/" >
+        			  <a class="dropdown-item" href="/home2/{{catname.category_id}}" >
 						  {{catname.category_name}}
 					  </a>
 					{% endfor %}
@@ -58,7 +58,7 @@
 	<!--user info heading -->
 	<!-- nameing header-->
 	<div class="breadcrumb"> {% if email == None %}
-		<a href="/login" style="position:relative; left:80%; top:2px; color: white;">
+		<a href="/accounts/login" style="position:relative; left:80%; top:2px; color: white;">
 			<button class="btn btn-primary float-end mx-2 mt-2"> Login</button>
 		</a> {% else %}
 		<div class="col-sm-3 mx-3 mt-2"> <b>NAME: </b> {{name}}
@@ -66,7 +66,7 @@
 		<div class="row d-flex justify-content-right">
 			<div class="header1">
 				<button style="position:relative; left:700px; top:2px; " class="btn btn-primary float-end mx-2 mt-2">
-					<a href="/logout" class="text-light">
+					<a href="{% url 'logout' %}" class="text-light" style="text-decoration:none" >
 						Logout
 					</a>
 				</button>

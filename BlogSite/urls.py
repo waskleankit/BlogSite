@@ -16,16 +16,16 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from BlogSite.views import  home, about, dashboard ,createblog ,post_detail ,edit, post_user ,deletepost ,update,home2
-
+from BlogSite.views import dashboard2 , selectedplan ,thank
 from django.urls import include
-
+from django.contrib.auth.views import LogoutView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home),
     path('home/', home),
     path('about/', about),
-    path('dashboard/', dashboard),
+    path('dashboard/', dashboard,name='dashboard'),
     path('createblog/', createblog),
     path('<int:post_id>/', post_detail,name='post_detail'),
     path('blogadmin/',include("BlogAdmin.urls")),
@@ -34,5 +34,9 @@ urlpatterns = [
     path('deletepost', deletepost),
     path('update', update),
     path('home2/<int:category_id>/', home2),
-
+    path('dashboard2/<int:category_id>/', dashboard2),
+    path('accounts/', include('allauth.urls')),
+    path('logout/', LogoutView.as_view(), name="logout"),
+    path('selectedplan/', selectedplan),
+    path('thank/', thank),
 ]

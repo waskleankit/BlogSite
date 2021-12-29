@@ -14,7 +14,7 @@ from django.utils import timezone
 class Posts(models.Model):
     id = models.IntegerField(primary_key=True)
     title = models.CharField(max_length=50)
-    description = models.CharField(max_length=500)
+    description = models.CharField(max_length=1000)
     date_created = models.DateTimeField('date published',default=timezone.now())
     category_id = models.IntegerField(default=0)
     user_id = models.IntegerField(default=0)

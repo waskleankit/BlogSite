@@ -6,17 +6,19 @@ from django.shortcuts import redirect
 from django.db.models import Q
 
 
-name = "name"
-email = "email"
+
+
 
 
 
 
 def home(request):
-    # ROWS_PER_PAGE = 5
-    # page = request.args.get('page', 1, type=int)
-    # email = dict(session).get('email',None)
-    # name = dict(session).get('name',None)
+    try:
+        name = request.user
+        email = request.user.email
+    except:
+        name = None
+        email =None
     if request.method == "POST":
         tag = request.POST['sv']
         posts = Posts.objects.filter(Q(description__contains=tag) | Q(title__contains=tag))
@@ -24,25 +26,38 @@ def home(request):
     else:
         posts = Posts.objects.order_by('-date_created')
     #     posts = Posts.query.paginate(page=page, per_page=ROWS_PER_PAGE)
-    # cate = Category.query.all()
-    # username = Users.query.all()
-    # user = Users.query.all()
-    # user1 = Users.query.filter_by(name=name).first()
-    # if user1 == None:
-    #     userinserting = Users(name,email)
-    #     db.session.add(userinserting)
-    #     db.session.commit()
-    # return render_template('/index.html',email=email,posts=posts,category=cate,username=username,name=name)
-
+    user1 = Users.objects.filter(name=name).first()
+    try:
+        if user1.name == None:
+            latest_user = Users.objects.latest('user_id')
+            user_id=latest_user.user_id + 1
+            password = "kuchbhi"
+            role = "BlogAdmin"
+            print(name)
+            print(email)
+            name = "{}".format(name)
+            email = "{}".format(email)
+            userinserting = Users(user_id,role,name,email,password)
+            userinserting.save();
+            print(" new user saved")
+            name = request.user
+            email = request.user.email
+    except:
+        name = None
+        email =None
     cate = Category.objects.all()
     username = Users.objects.all()
-    # print(posts)
-    # print(posts.user_id)
     context = {'name': name, 'email': email,'posts':posts,'category' : cate,'username':username}
-    # context = {'name': name, 'email': email}
     return render(request,"index.html",context)
 
+
 def home2(request,category_id):
+    try:
+        name = request.user
+        email = request.user.email
+    except:
+        name = None
+        email =None
     searchcat = category_id
     posts = Posts.objects.filter(category_id=searchcat)
     cate = Category.objects.all()
@@ -52,174 +67,175 @@ def home2(request,category_id):
 
 from django.shortcuts import get_object_or_404
 def post_detail(request,post_id):
-#     idvalue = request.values.get("b")
-#     print(idvalue)
-#     posts = Posts.query.filter_by(id = idvalue).first()
-#     username = Users.query.all()
-#     cate = Category.query.all()
-#     email = dict(session).get('email', None)
-#     name = dict(session).get('name', None)
-#     return render_template('singlepost.html',email=email,posts=posts,category=cate,username=username,name=name)
+    try:
+        name = request.user
+        email = request.user.email
+    except:
+        name = None
+        email =None
     posts = get_object_or_404(Posts, pk=post_id)
     cate = Category.objects.all()
     username = Users.objects.all()
-
     context = {'name': name, 'email': email,'posts':posts,'category' : cate,'username':username}
     return render(request,"singlepost.html",context)
 
-# from django.shortcuts import get_object_or_404
-# def customer_detail(request,customer_id):
-#     customer = get_object_or_404(Customer, pk=customer_id)
-#     context = {'customer': customer,}
-#     return render(request, 'CustomerApp/customer_details.html',context)
-
-
 def about(request):
-    # email = dict(session).get('email', None)
-    # name = dict(session).get('name', None)
+    try:
+        name = request.user
+        email = request.user.email
+    except:
+        name = None
+        email =None
     context = {'name': name, 'email': email}
     return render(request,"aboutus.html",context)
 
 
 def dashboard(request):
-    # email1 = dict(session).get('email', None)
-    # name = dict(session).get('name', None)
-    # user = Users.query.filter_by(email = email1).first()
-    # userid = user.user_id
-    # cate = Category.query.all()
-    # tag = request.form.get('sv')
-    # searchcat = request.args.get("s_cat")
-    # print(searchcat)
-    # if searchcat != None:
-    #     posts = Posts.query.filter_by(category_id = searchcat,user_id = userid).all()
-    # elif tag != None:
-    #     search = "%{}%".format(tag)
-    #     posts = Posts.query.filter(or_(Posts.description.like(search),Posts.title.like(search))).filter_by(user_id = userid).all()
-    # else:
-    #     posts = Posts.query.filter_by(user_id = userid).all()
+    try:
+        name = request.user
+        email = request.user.email
+    except:
+        name = None
+        email =None
+    user = Users.objects.filter(email = email).first()
+    userid = user.user_id
     # return render_template('blogdashboard.html',email=email1,posts=posts,category=cate,name=name)
     if request.method == "POST":
         if request.POST['sv'] != None:
            tag = request.POST['sv']
-           posts = Posts.objects.filter(Q(description__contains=tag) | Q(title__contains=tag))
+           posts = Posts.objects.filter( Q(Q(description__contains=tag) | Q(title__contains=tag)) & Q(user_id=userid))
+           # posts = Posts.objects.filter(user_id=userid).all()
          # .paginate(page=page, per_page=ROWS_PER_PAGE)
-        else:
-            posts = Posts.objects.filter(category_id=searchcat)
     else:
-         posts = Posts.objects.order_by('-date_created')
+         posts = Posts.objects.filter(user_id = userid)
+             # order_by('-date_created')
+    cate = Category.objects.all()
+    username = Users.objects.all()
+    context = {'name': name, 'email': email ,'posts':posts, 'category': cate, 'username': username}
+    return render(request, "blogdashboard.html", context)
+
+def dashboard2(request,category_id):
+    try:
+        name = request.user
+        email = request.user.email
+    except:
+        name = None
+        email =None
+    searchcat = category_id
+    user = Users.objects.filter(email = email).first()
+    userid = user.user_id
+    posts = Posts.objects.filter(Q(category_id=searchcat) & Q(user_id=userid)).all
     cate = Category.objects.all()
     username = Users.objects.all()
     context = {'name': name, 'email': email ,'posts':posts, 'category': cate, 'username': username}
     return render(request, "blogdashboard.html", context)
 
 def createblog(request):
-    # email = dict(session).get('email', None)
-    # name = dict(session).get('name', None)
-    # user = Users.query.filter_by(email = email).first()
-    # userid = user.user_id
-    # countblogs = Posts.query.filter_by(user_id=userid).count()
-    # if countblogs >= 5:
-    #     pass
-    #     return render_template('plans.html', email=email, name=name)
-    # else:
-    #     cate = Category.query.all()
-    #     return render_template('createblog.html',email=email,category=cate,name=name)
-    cate = Category.objects.all()
-    context = {'name': name, 'email': email ,'category': cate}
-    return render(request, "createblog.html", context)
+    # try excepet agr name email nhi chle to
+    name = request.user
+    email = request.user.email
+    user = Users.objects.filter(email = email).first()
+    userid = user.user_id
+    countblogs = Posts.objects.filter(user_id=userid).count()
+    if countblogs >= 5:
+        context = {'name': name, 'email': email }
+        return render(request,"plans.html", context)
+    else:
+        cate = Category.objects.all()
+        context = {'name': name, 'email': email ,'category': cate}
+        return render(request, "createblog.html", context)
 
 # this post_user is for creating new  post
 from django.utils import timezone
 def post_user(request):
-    # name = request.POST['name']
     title = request.POST['name']
     description = request.POST['desc']
     date_created = timezone.now()
     category_id = request.POST['category']
-#     email1 = dict(session).get('email', None)
-#     user = Users.query.filter_by(email = email1).first()
-#     user_id = user.user_id
-    user_id = 2
+    try:
+        name = request.user
+        email = request.user.email
+    except:
+        name = None
+        email =None
+    user = Users.objects.filter(email = email).first()
+    userid = user.user_id
     latest_post = Posts.objects.latest('id')
     id=latest_post.id + 1
-    post=Posts(id,title,description,date_created,category_id,user_id)
+    post=Posts(id,title,description,date_created,category_id,userid)
     post.save();
-    # user = Users.query.filter_by(email = email1).first()
-#     userid = user.user_id
-#     posts = Posts.query.filter_by(user_id = userid).all()
-#     name = dict(session).get('name', None)
-    posts = Posts.objects.all()
+    posts = Posts.objects.filter(user_id=userid)
     cate = Category.objects.all()
     username = Users.objects.all()
     context = {'name': name, 'email': email ,'posts':posts, 'category': cate, 'username': username}
     return render(request, "blogdashboard.html", context)
 
 
-# @app.route("/edit",methods = ["GET","POST"])
 def edit(request,post_id):
-#     idvalue = request.values.get("b")
-#     posts = Posts.query.filter_by(id = idvalue).first()
-#     cate = Category.query.all()
-#     email = dict(session).get('email', None)
-#     name = dict(session).get('name', None)
-#     return render_template('editblog.html',email=email, post=posts,category=cate,name=name)
+    try:
+        name = request.user
+        email = request.user.email
+    except:
+        name = None
+        email =None
     posts = get_object_or_404(Posts, pk=post_id)
     cate = Category.objects.all()
     username = Users.objects.all()
     context = {'name': name, 'email': email,'posts':posts,'category' : cate,'username':username}
     return render(request,'editblog.html',context)
-#
-# @app.route('/update',methods=['POST'])
+
+
 def update(request):
     id = request.POST.get('b')
     title = request.POST['name']
     description = request.POST['desc']
     category_id = request.POST.get('category')
     date_created = timezone.now()
-
-#     id = request.form['b']
-#     posts = db.session.query(Posts).filter_by(id = request.form['b']).update({"title": title,"description":description,"date_created":date_created,"category_id":category})
-#     db.session.commit()
 #     email1 = dict(session).get('email', None)
-#     name = dict(session).get('name', None)
-#     user = Users.query.filter_by(email=email1).first()
-#     userid = user.user_id
-    user_id = 2
-#     posts = Posts.query.filter_by(user_id=userid).all()
+    try:
+        name = request.user
+        email = request.user.email
+    except:
+        name = None
+        email =None
+    user = Users.objects.filter(email=email).first()
+    userid = user.user_id
+    # posts = Posts.objects.filter(user_id=userid).all()
 #     cate = Category.query.all()
-#     return render_template("blogdashboard.html",email=email1,posts=posts,category=cate,name=name)
-    post=Posts(id,title,description,date_created,category_id,user_id)
+    post=Posts(id,title,description,date_created,category_id,userid)
     post.save();
     return redirect('/dashboard')
-#
-# @app.route('/deletepost',methods=['POST','GET'])
+
+
 def deletepost(request):
     idvalue = request.POST["a"]
     posts = Posts.objects.filter(id=idvalue).delete()
     return redirect('/dashboard')
-#
-# @app.route("/selectedplan",methods = ["GET","POST"])
-# def selectedplan():
-#     idvalue = request.form.get("plan")
-#     posts = None
-#     price = None
-#     plan = None
-#     if idvalue == "1":
-#         posts = 20
-#         price = 1
-#         plan = "Basic"
-#     elif idvalue == "2":
-#         posts = 100
-#         price = 5
-#         plan = "Standard"
-#     elif idvalue == "3":
-#         posts = 1000
-#         price = 10
-#         plan = "Premium"
-#     email = dict(session).get('email', None)
-#     name = dict(session).get('name', None)
-#     return render_template('selectedplan.html',email=email,name=name,planid=idvalue,post=posts,price=price,plan=plan)
-#
+
+
+def selectedplan(request):
+    idvalue = request.POST["plan"]
+    posts = None
+    price = None
+    plan = None
+    if idvalue == "1":
+        posts = 20
+        price = 1
+        plan = "Basic"
+    elif idvalue == "2":
+        posts = 100
+        price = 5
+        plan = "Standard"
+    elif idvalue == "3":
+        posts = 1000
+        price = 10
+        plan = "Premium"
+    # try excepet agr name email nhi chle to
+    name = request.user
+    email = request.user.email
+    context = { 'email' : email , 'name' : name , 'planid' : idvalue , 'post' : posts , 'price' : price , 'plan' : plan}
+    return render(request,'selectedplan.html',context)
+
 # @app.route('/payment', methods=['POST'])
 # def payment():
 #     payment = paypalrestsdk.Payment({
@@ -274,17 +290,18 @@ def deletepost(request):
 #     return jsonify({'success' : success})
 #
 #
-#
+
 # @app.route('/thankyou',methods = ["GET","POST"])
-# def thank():
-#     email = dict(session).get('email', None)
-#     name = dict(session).get('name', None)
-#     amount = request.args.get('amount')
-#
-#
-#     # print(amount)
-#     # print(user_id)
-#     # success = request.args.get('success')
-#     # print(success)
-#     # print(request.form['price'])
-#     return render_template('thankyou.html',email=email,name=name)
+def thank(request):
+    # try excepet agr name email nhi chle to
+    name = request.user
+    email = request.user.email
+    transaction = request.POST['transactions']
+    # amount = request.POST['amount']
+    # print(amount)
+    # print(user_id)
+    # success = request.args.get('success')
+    # print(success)
+    # print(request.form['price'])
+    context = {"email":email,"name":name}
+    return render(request,'thankyou.html',context)

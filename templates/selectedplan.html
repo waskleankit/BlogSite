@@ -19,14 +19,14 @@
 			<div class="collapse navbar-collapse" id="navbarTogglerDemo03">
 				<ul class="navbar-nav me-auto mb-2 mb-lg-0">
 					<li class="nav-item">
-						<a href="{{ url_for('home') }}" class="nav-link active" aria-current="page">
+						<a href="/home" class="nav-link active" aria-current="page">
 						Home
 						</a>
 					</li>
 					<li class="nav-item"> <a class="nav-link" href="/about">About</a> </li>
 					{% if email != None %}
-					<li class="nav-item"> <a class="nav-link" href="{{ url_for('dashboard')}}">Dashboard</a> </li>
-					<li class="nav-item"> <a class="nav-link" href="{{ url_for('createblog')}}">Create Blog</a> </li>
+					<li class="nav-item"> <a class="nav-link" href="/dashboard">Dashboard</a> </li>
+					<li class="nav-item"> <a class="nav-link" href="/createblog">Create Blog</a> </li>
 					{% endif %}
 
 				</ul>
@@ -38,7 +38,7 @@
 		<!--user info heading -->
 	<!-- nameing header-->
 	<div class="breadcrumb"> {% if email == None %}
-		<a href="{{ url_for('login')}}" style="position:relative; left:80%; top:2px; color: white;">
+		<a href="/login" style="position:relative; left:80%; top:2px; color: white;">
 			<button class="btn btn-primary float-end mx-2 mt-2"> Login</button>
 		</a> {% else %}
 		<div class="col-sm-3 mx-3 mt-2"> <b>NAME: </b> {{name}}
@@ -46,7 +46,7 @@
 		<div class="row d-flex justify-content-right">
 			<div class="header1">
 				<button style="position:relative; left:700px; top:2px; " class="btn btn-primary float-end mx-2 mt-2">
-					<a href="{{ url_for('logout')}}" class="text-light">
+					<a href="{% url 'logout' %}" class="text-light" style="text-decoration:none">
 						Logout
 					</a>
 				</button>
@@ -75,44 +75,53 @@
               <li>update </li>
               <li>Help center access</li>
             </ul>
-    <div id="paypal-button"></div>
 
-<script src="https://www.paypalobjects.com/api/checkout.js"></script>
 
-<script>
-    var CREATE_PAYMENT_URL  = 'http://127.0.0.1:5000/payment';
-    var EXECUTE_PAYMENT_URL = 'http://127.0.0.1:5000/execute';
+			  <!-- Include the PayPal JavaScript SDK; replace "test" with your own sandbox Business account app client ID -->
+			  <script src="https://www.paypal.com/sdk/js?client-id=ASWQs1lkYr8ZcaUL_lGdN6KUJBygk7kCj4fE6r0a4slm7PWDuidGQ3IRx7-GPoo_XFEClhaxkPLi_w01&currency=USD"></script>
 
-    paypal.Button.render({
+			  <!-- Set up a container element for the button -->
+			  <div id="paypal-button-container"></div>
 
-        env: 'sandbox', // Or 'sandbox'
+			  <script>
+      paypal.Buttons({
 
-        commit: true, // Show a 'Pay Now' button
-
-        payment: function() {
-            return paypal.request.post(CREATE_PAYMENT_URL).then(function(data) {
-                return data.paymentID;
-            });
+        // Sets up the transaction when a payment button is clicked
+        createOrder: function(data, actions) {
+          return actions.order.create({
+            purchase_units: [{
+              amount: {
+                value: '77.44' // Can reference variables or functions. Example: `value: document.getElementById('...').value`
+              }
+            }]
+          });
         },
 
-        onAuthorize: function(data) {
-            return paypal.request.post(EXECUTE_PAYMENT_URL, {
-                paymentID: data.paymentID,
-                payerID:   data.payerID
-            }).then(function(res) {
-                console.log(res.success)
-                // The payment is complete!
-                // You can now show a confirmation message to the customer
-                location.href ="{{ url_for('thank',amount=price) }}";
-            });
+        // Finalize the transaction after payer approval
+        onApprove: function(data, actions) {
+          return actions.order.capture().then(function(orderData) {
+            // Successful capture! For dev/demo purposes:
+                console.log('Capture result', orderData, JSON.stringify(orderData, null, 2));
+                var transaction = orderData.purchase_units[0].payments.captures[0];
+            //    document.write(transaction);
+                alert('Transaction '+ transaction.status + ': ' + transaction.id + '\n\nSee console for all available details');
+			//	location.href ="/thank";
+			//  $.post(/thank, data, function(response);
 
 
+            // When ready to go live, remove the alert and show a success message within this page. For example:
+            // var element = document.getElementById('paypal-button-container');
+            // element.innerHTML = '';
+            // element.innerHTML = '<h3>Thank you for your payment!</h3>';
+            // Or go to another URL:  actions.redirect('thank.html');
+          });
         }
+      }).render('#paypal-button-container');
 
-    }, '#paypal-button');
-</script>
+    </script>
+
 			  <br>
-						<form action="{{ url_for('home')}}" method="POST">
+						<form action="/'home'" method="POST">
 							<button class="btn btn-primary" type="submit" >Cancel</button>
 						</form>
 
