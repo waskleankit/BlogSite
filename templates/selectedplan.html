@@ -91,7 +91,7 @@
           return actions.order.create({
             purchase_units: [{
               amount: {
-                value: '77.44' // Can reference variables or functions. Example: `value: document.getElementById('...').value`
+                value: '5' // Can reference variables or functions. Example: `value: document.getElementById('...').value`
               }
             }]
           });
@@ -105,7 +105,7 @@
                 var transaction = orderData.purchase_units[0].payments.captures[0];
             //    document.write(transaction);
                 alert('Transaction '+ transaction.status + ': ' + transaction.id + '\n\nSee console for all available details');
-			//	location.href ="/thank";
+				location.href ="{% url 'thank'  %}";
 			//  $.post(/thank, data, function(response);
 
 

@@ -54,8 +54,9 @@
 		<div class="col md-8 mt-5">
 			<div class="row justify-content-center">
 				<div class="card text-center">
-		<form method="POST" action="/post_user">
+		<form method="POST" action="/post_user" enctype="multipart/form-data">
 			{% csrf_token %}
+			{{ form.as_p }}
 					<div class="card-header">
 
 							<label name="login_button" style="position:relative; left:center; top:2px;"><b>Select Category</b></label>
@@ -76,6 +77,11 @@
 						<label><b>Description:</b></label>
 					<br>
 					<textarea class="md-textarea form-control" rows="6" cols="80" id="desc" name="desc" type="text" /></textarea>
+					<br>
+					<br>
+					<label><b>Insert Image:</b></label>
+					   <input type="file" id="myFile" name="img_name" accept="image/jpeg,image/png"/>
+
 					<br>
 					</div>
 					<div class="card-header">

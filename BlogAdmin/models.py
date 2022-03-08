@@ -18,9 +18,9 @@ class Posts(models.Model):
     date_created = models.DateTimeField('date published',default=timezone.now())
     category_id = models.IntegerField(default=0)
     user_id = models.IntegerField(default=0)
-
+    image = models.ImageField(upload_to='images/', blank=True,null =True)
     def __str__(self):
-        return "{0} , {1} , {2} , {3}, {4}, {5} ".format(self.id,self.title,self.description,self.date_created,self.category_id,self.user_id)
+        return "{0} , {1} , {2} , {3}, {4}, {5} , {6}".format(self.id,self.title,self.description,self.date_created,self.category_id,self.user_id, self.image)
 
 
 class Category(models.Model):
@@ -42,15 +42,15 @@ class Users(models.Model):
 
 
 class Paymenttable(models.Model):
-    payment_id = models.CharField(max_length=50,primary_key=True)
-    user_id = models.IntegerField
+    payment_id = models.IntegerField(max_length=50,primary_key=True)
+    user_id = models.IntegerField(default=2)
     payer_id = models.CharField(max_length=50)
     amount = models.IntegerField(default=0)
     email = models.EmailField()
     name = models.CharField(max_length=50)
     json_response = models.CharField(max_length=50)
     def __str__(self):
-        return "{0} , {1} , {2} , {3}, {4}".format(self.payment_id, self.user_id,self.payer_id,self.amount, self.email, self.name,self.json_responsed)
+        return "{0} , {1} , {2} , {3}, {4}, {5} , {6}".format(self.payment_id, self.user_id,self.payer_id,self.amount, self.email, self.name,self.json_response)
 
 
 

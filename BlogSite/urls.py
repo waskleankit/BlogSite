@@ -19,6 +19,9 @@ from BlogSite.views import  home, about, dashboard ,createblog ,post_detail ,edi
 from BlogSite.views import dashboard2 , selectedplan ,thank
 from django.urls import include
 from django.contrib.auth.views import LogoutView
+from django.conf import settings
+from django.conf.urls.static import static
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -38,5 +41,5 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),
     path('logout/', LogoutView.as_view(), name="logout"),
     path('selectedplan/', selectedplan),
-    path('thank/', thank),
-]
+    path('thank/', thank,name="thank"),
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

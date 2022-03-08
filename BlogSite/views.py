@@ -1,50 +1,58 @@
-from django.http import HttpResponse
+
 from django.shortcuts import render
 from BlogAdmin.models import *
-from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import redirect
 from django.db.models import Q
-
-
-
-
-
-
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 def home(request):
+    page = request.GET.get('page', 1)
     try:
-        name = request.user
         email = request.user.email
+        name = request.user
+        # print(email)
+        # fname = request.firstname()
     except:
         name = None
-        email =None
-    if request.method == "POST":
-        tag = request.POST['sv']
-        posts = Posts.objects.filter(Q(description__contains=tag) | Q(title__contains=tag))
-            # .paginate(page=page, per_page=ROWS_PER_PAGE)
-    else:
-        posts = Posts.objects.order_by('-date_created')
-    #     posts = Posts.query.paginate(page=page, per_page=ROWS_PER_PAGE)
-    user1 = Users.objects.filter(name=name).first()
+        email = None
+        print(email)
+        print(email)
+        print(email)
+
+    dbuser = Users.objects.filter(email=email).first()
+    # print(dbuser)
     try:
-        if user1.name == None:
+        if str(name) != dbuser.name :
+            # if str(name) != dbuser.name & str(name) != None:
             latest_user = Users.objects.latest('user_id')
             user_id=latest_user.user_id + 1
             password = "kuchbhi"
-            role = "BlogAdmin"
-            print(name)
-            print(email)
+            role = "User"
             name = "{}".format(name)
             email = "{}".format(email)
             userinserting = Users(user_id,role,name,email,password)
             userinserting.save();
-            print(" new user saved")
             name = request.user
             email = request.user.email
     except:
-        name = None
-        email =None
+        print("exception inn double if ")
+
+    if request.method == "POST":
+        tag = request.POST['sv']
+        posts = Posts.objects.filter(Q(description__contains=tag) | Q(title__contains=tag) | Q(date_created__contains=tag))
+    else:
+        postss = Posts.objects.order_by('-date_created')
+        paginator = Paginator(postss,5)
+        # print(page)
+        try:
+            posts = paginator.page(page)
+        except PageNotAnInteger:
+            posts = paginator.page(1)
+        except EmptyPage:
+            posts = paginator.page(paginator.num_pages)
+    #     posts = Posts.query.paginate(page=page, per_page=ROWS_PER_PAGE)
+    user1 = Users.objects.filter(email=email).first()
     cate = Category.objects.all()
     username = Users.objects.all()
     context = {'name': name, 'email': email,'posts':posts,'category' : cate,'username':username}
@@ -97,7 +105,8 @@ def dashboard(request):
     except:
         name = None
         email =None
-    user = Users.objects.filter(email = email).first()
+    # print(name)
+    user = Users.objects.filter(email=email).first()
     userid = user.user_id
     # return render_template('blogdashboard.html',email=email1,posts=posts,category=cate,name=name)
     if request.method == "POST":
@@ -124,7 +133,10 @@ def dashboard2(request,category_id):
     searchcat = category_id
     user = Users.objects.filter(email = email).first()
     userid = user.user_id
-    posts = Posts.objects.filter(Q(category_id=searchcat) & Q(user_id=userid)).all
+    # userid = "{}".format(userid)
+    # print(userid)
+    # print(category_id)
+    posts = Posts.objects.filter(Q(category_id=searchcat) & Q(user_id=userid))
     cate = Category.objects.all()
     username = Users.objects.all()
     context = {'name': name, 'email': email ,'posts':posts, 'category': cate, 'username': username}
@@ -134,16 +146,16 @@ def createblog(request):
     # try excepet agr name email nhi chle to
     name = request.user
     email = request.user.email
-    user = Users.objects.filter(email = email).first()
-    userid = user.user_id
+    saveduser = Users.objects.filter(email=email).first()
+    userid = saveduser.user_id
     countblogs = Posts.objects.filter(user_id=userid).count()
-    if countblogs >= 5:
-        context = {'name': name, 'email': email }
-        return render(request,"plans.html", context)
-    else:
+    if countblogs < 5 or Paymenttable.objects.filter(user_id = userid):
         cate = Category.objects.all()
         context = {'name': name, 'email': email ,'category': cate}
         return render(request, "createblog.html", context)
+    else:
+        context = {'name': name, 'email': email }
+        return render(request,"plans.html", context)
 
 # this post_user is for creating new  post
 from django.utils import timezone
@@ -152,6 +164,7 @@ def post_user(request):
     description = request.POST['desc']
     date_created = timezone.now()
     category_id = request.POST['category']
+    image_upload = request.FILES['img_name']
     try:
         name = request.user
         email = request.user.email
@@ -162,7 +175,7 @@ def post_user(request):
     userid = user.user_id
     latest_post = Posts.objects.latest('id')
     id=latest_post.id + 1
-    post=Posts(id,title,description,date_created,category_id,userid)
+    post=Posts(id,title,description,date_created,category_id,userid,image_upload)
     post.save();
     posts = Posts.objects.filter(user_id=userid)
     cate = Category.objects.all()
@@ -191,7 +204,7 @@ def update(request):
     description = request.POST['desc']
     category_id = request.POST.get('category')
     date_created = timezone.now()
-#     email1 = dict(session).get('email', None)
+    # email1 = dict(session).get('email', None)
     try:
         name = request.user
         email = request.user.email
@@ -200,10 +213,14 @@ def update(request):
         email =None
     user = Users.objects.filter(email=email).first()
     userid = user.user_id
-    # posts = Posts.objects.filter(user_id=userid).all()
+    post = Posts.objects.filter(user_id=userid).first()
+    post.title = title
+    post.description = description
+    post.category_id = category_id
+    post.save()
 #     cate = Category.query.all()
-    post=Posts(id,title,description,date_created,category_id,userid)
-    post.save();
+#     post=Posts(id,title,description,date_created,category_id,userid)
+#     post.save();
     return redirect('/dashboard')
 
 
@@ -235,6 +252,32 @@ def selectedplan(request):
     email = request.user.email
     context = { 'email' : email , 'name' : name , 'planid' : idvalue , 'post' : posts , 'price' : price , 'plan' : plan}
     return render(request,'selectedplan.html',context)
+
+def thank(request):
+    # try excepet agr name email nhi chle to
+    name = request.user
+    email = request.user.email
+    name = "{}".format(name)
+    email = "{}".format(email)
+    payment_id = 1
+    user = Users.objects.filter(email=email).first()
+    userid = user.user_id
+    userid = "{}".format(userid)
+    payer_id = 1
+    latest_payment = Paymenttable.objects.latest('payment_id')
+    paymentid=latest_payment.payment_id + 1
+    amount = 5
+    json_response = "success"
+    # transaction_id = request.POST['transactionId']
+    # amount = request.POST['amount']
+    paymenttable = Paymenttable(paymentid,userid,payer_id,amount,email,name,json_response)
+    paymenttable.save();
+    # success = request.args.get('success')
+    # print(request.form['price'])
+    name = request.user
+    email = request.user.email
+    context = {"email":email,"name":name}
+    return render(request,'thankyou.html',context)
 
 # @app.route('/payment', methods=['POST'])
 # def payment():
@@ -292,16 +335,21 @@ def selectedplan(request):
 #
 
 # @app.route('/thankyou',methods = ["GET","POST"])
-def thank(request):
-    # try excepet agr name email nhi chle to
-    name = request.user
-    email = request.user.email
-    transaction = request.POST['transactions']
-    # amount = request.POST['amount']
-    # print(amount)
-    # print(user_id)
-    # success = request.args.get('success')
-    # print(success)
-    # print(request.form['price'])
-    context = {"email":email,"name":name}
-    return render(request,'thankyou.html',context)
+
+
+
+# try:
+#     if (str(name) != None & str(name) != dbuser.name):
+#         latest_user = Users.objects.latest('user_id')
+#         user_id=latest_user.user_id + 1
+#         password = "kuchbhi"
+#         role = "User"
+#         name = "{}".format(name)
+#         email = "{}".format(email)
+#         userinserting = Users(user_id,role,name,email,password)
+#         userinserting.save();
+#         name = None
+#         email = None
+# except:
+#     pass
+# print("exception inn double if ")
