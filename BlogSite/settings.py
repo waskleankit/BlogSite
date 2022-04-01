@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 import os.path
 from pathlib import Path
-
+import django_on_heroku
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -48,6 +48,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -84,10 +85,10 @@ WSGI_APPLICATION = 'BlogSite.wsgi.application'
 DATABASES={
    'default':{
       'ENGINE':'django.db.backends.postgresql_psycopg2',
-      'NAME':'postgres',
-      'USER':'mydbuser',
-      'PASSWORD':'ankitwaskle',
-      'HOST':'localhost',
+      'NAME':'deoculqh2brols',
+      'USER':'aqlpefvnbinnzb',
+      'PASSWORD':'38f8cfe27bf0f35eed0e8d67455e8d1b58ca0fa817f5020d84c8e7052a6a706e',
+      'HOST':'ec2-52-73-155-171.compute-1.amazonaws.com',
       'PORT':'5432',
    }
 }
@@ -133,6 +134,7 @@ SOCIALACCOUNT_PROVIDERS = {
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'root')
 STATIC_URL = 'static/'
+django_on_heroku.settings(locals())
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 STATICFILES_DIRS = (
